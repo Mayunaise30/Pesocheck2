@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PesoCheck - History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{{ url_for('static', filename='images/peso-check-logo.ico') }}" />
+  <style>
+    :root {
+      --bg-primary: #0b132b;
+      --bg-card: #1c2541;
+      --color-primary: white;
+      --color-success: #4caf50;
+      --color-danger: #f44336;
+      --color-warning: #ffeb3b;
+      --color-button: #3a86ff;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background-color: var(--bg-primary);
+      color: var(--color-primary);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    nav {
+      background: var(--bg-card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    nav h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .nav-logo {
+      height: 30px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+    
+    nav ul li a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    
+    nav ul li a:hover {
+      opacity: 0.8;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      flex: 1;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border-radius: 10px;
+      padding: 2rem;
+    }
+    
+    .entry {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .entry img {
+      width: 150px;
+      height: auto;
+      border-radius: 8px;
+      margin-right: 2rem;
+    }
+    
+    .entry-info {
+      display: flex;
+      flex-direction: row;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    
+    .entry-info p {
+      margin: 0;
+    }
+    
+    .result-real {
+      color: var(--color-success);
+    }
+    
+    .result-fake {
+      color: var(--color-danger);
+    }
+    
+    .result-invalid {
+      color: var(--color-warning);
+    }
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .download-btn {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      background-color: var(--color-button);
+      color: white;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Responsive styling */
+    @media (max-width: 768px) {
+      .entry {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .entry img {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .entry-info {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      nav {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .download-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>
+      <img src="{{ url_for('static', filename='images/peso-check-logo.png') }}" alt="PesoCheck Logo" class="nav-logo" />
+      PesoCheck
+    </h1>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/history">History</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>History</h2>
+      <a href="{{ url_for('download_history') }}" class="download-btn">Download History</a>
+      {% if history %}
+        {% for entry in history %}
+          <div class="entry">
+            <img src="{{ url_for('uploaded_file', filename=entry.filename) }}" alt="Bill Image">
+            <div class="entry-info">
+              <p class="{{ 'result-real' if entry.label == 'Real Money' else 'result-fake' if entry.label == 'Counterfeit Money' else 'result-invalid' }}"><strong>{{ entry.label }}</strong></p>
+              <p>Confidence: {{ entry.confidence }}%</p>
+              <p>{{ entry.timestamp }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No history available.</p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

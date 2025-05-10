@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PesoCheck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{{ url_for('static', filename='images/peso-check-logo.ico') }}" />
+  <style>
+    :root {
+      --bg-primary: #0b132b;
+      --bg-card: #1c2541;
+      --color-primary: white;
+      --color-success: #4caf50;
+      --color-danger: #f44336;
+      --color-warning: #ffca28;
+      --color-accent: #00f2a6;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background-color: var(--bg-primary);
+      color: var(--color-primary);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    nav {
+      background: var(--bg-card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    nav h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .nav-logo {
+      height: 30px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+    
+    nav ul li a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    
+    nav ul li a:hover {
+      opacity: 0.8;
+    }
+    
+    .main-container {
+      display: flex;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      flex: 1;
+      justify-content: center;
+      align-items: stretch;
+    }
+    
+    .card {
+      flex: 1;
+      width: 500px;
+      background-color: var(--bg-card);
+      padding: 2rem;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .button-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .upload-btn, .analyze {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .upload-btn {
+      background: #eeeeee;
+      color: black;
+      display: inline-block;
+    }
+    
+    .analyze {
+      background-color: var(--color-accent);
+      border: none;
+      color: black;
+    }
+    
+    .preview, .processed {
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      border-radius: 10px;
+      object-fit: contain;
+      height: 220px;
+    }
+    
+    .image-container, .result-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .result-status {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    
+    .result-real { color: var(--color-success); }
+    .result-fake { color: var(--color-danger); }
+    .result-invalid { color: var(--color-warning); }
+    
+    .result-waiting {
+      color: white;
+      font-weight: normal;
+      font-size: 1.5rem;
+    }
+    
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin-left: 10px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--color-accent);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    
+    .thumbnails-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .thumbnail.active {
+      border: 2px solid var(--color-accent);
+    }
+    
+    .batch-results {
+      max-height: 340px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+    
+    .batch-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+    }
+    
+    .batch-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    
+    .batch-item-info {
+      flex: 1;
+    }
+    
+    .batch-item-info p {
+      margin: 2px 0;
+    }
+
+    #upload-placeholder {
+      text-align: center;
+      margin-top: 4rem;
+      color: #6c757d;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Responsive styling */
+    @media (max-width: 992px) {
+      .card {
+        padding: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .card {
+        max-width: 100%;
+        width: 100%;
+        min-height: 450px;
+      }
+      
+      .preview, .processed {
+        height: 220px;
+      }
+      
+      .thumbnails-container {
+        max-height: 220px;
+      }
+      
+      .batch-results {
+        max-height: 340px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .main-container {
+        padding: 0 1rem;
+        margin: 1rem auto;
+      }
+      
+      .card {
+        padding: 1.5rem;
+        min-height: 400px;
+      }
+      
+      .button-container {
+        flex-direction: column;
+      }
+      
+      .preview, .processed {
+        height: 160px;
+      }
+      
+      .thumbnails-container {
+        max-height: 160px;
+      }
+      
+      .batch-results {
+        max-height: 280px;
+      }
+      
+      #upload-placeholder {
+        height: 160px;
+        margin-top: 2rem;
+      }
+      
+      nav {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .result-status {
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+      }
+      
+      .batch-item {
+        padding: 8px;
+      }
+      
+      .batch-item img {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>
+      <img src="{{ url_for('static', filename='images/peso-check-logo.png') }}" alt="PesoCheck Logo" class="nav-logo" />
+      PesoCheck
+    </h1>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/history">History</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </nav>
+
+  <div class="main-container">
+    <form class="card" method="POST" enctype="multipart/form-data" id="uploadForm">
+      <h2 style="text-align: center;">Upload</h2>
+      
+      <div class="toggle-container">
+        <span>Batch Mode</span>
+        <label class="switch">
+          <input type="checkbox" id="batchToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="button-container">
+        <label for="fileInput" class="upload-btn" id="uploadLabel">Upload Image</label>
+        <button type="submit" class="analyze">Analyze</button>
+      </div>
+      
+      <input type="file" id="fileInput" name="file" required hidden />
+      <input type="file" id="batchFileInput" name="files[]" multiple hidden />
+      
+      <div class="image-container">
+        <img id="uploadedImage" class="preview" style="display: none;" />
+        <div id="thumbnails-container" class="thumbnails-container" style="display: none;"></div>
+        <p id="upload-placeholder" style="text-align: center; margin-top: 4rem; color: #6c757d;">No image selected</p>
+      </div>
+    </form>
+
+    <div class="card">
+      <h2 style="text-align: center;">Result</h2>
+      <div class="result-container">
+        <div id="single-result" style="text-align: center;">
+          <p id="status" class="result-status {{ 'result-real' if label == 'Real Money' else 'result-fake' if label == 'Counterfeit Money' else 'result-invalid' if label == 'Invalid (Not a Banknote)' else 'result-waiting' }}">
+            {{ label if label else 'Upload an image and click Analyze' }}
+          </p>
+          {% if confidence %}
+            <p style="text-align: center; font-size: 1.2rem;">Confidence: {{ confidence|round(2) }}%</p>
+          {% endif %}
+          {% if filename %}
+            <img src="{{ url_for('uploaded_file', filename=filename) }}" class="processed" />
+          {% endif %}
+        </div>
+        
+        <div id="batch-results" class="batch-results" style="display: none;">
+          <p style="text-align: center;">Batch Results</p>
+          <!-- Batch results will be populated here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const batchToggle = document.getElementById('batchToggle');
+    const fileInput = document.getElementById('fileInput');
+    const batchFileInput = document.getElementById('batchFileInput');
+    const uploadLabel = document.getElementById('uploadLabel');
+    const uploadedImage = document.getElementById('uploadedImage');
+    const thumbnailsContainer = document.getElementById('thumbnails-container');
+    const placeholder = document.getElementById('upload-placeholder');
+    const singleResult = document.getElementById('single-result');
+    const batchResults = document.getElementById('batch-results');
+    const uploadForm = document.getElementById('uploadForm');
+    
+    let selectedFiles = [];
+    let activeIndex = 0;
+    
+    batchToggle.addEventListener('change', function() {
+      if (this.checked) {
+        // Batch mode
+        fileInput.removeAttribute('required');
+        uploadLabel.textContent = 'Upload Images';
+        uploadedImage.style.display = 'none';
+        batchFileInput.setAttribute('required', '');
+        
+        // Reset displays
+        if (selectedFiles.length > 0) {
+          thumbnailsContainer.style.display = 'flex';
+        }
+        
+        // Switch to batch results view
+        singleResult.style.display = 'none';
+        batchResults.style.display = 'block';
+      } else {
+        // Single mode
+        batchFileInput.removeAttribute('required');
+        uploadLabel.textContent = 'Upload Image';
+        thumbnailsContainer.style.display = 'none';
+        fileInput.setAttribute('required', '');
+        
+        // Reset displays
+        if (uploadedImage.src) {
+          uploadedImage.style.display = 'block';
+        }
+        
+        // Switch to single result view
+        singleResult.style.display = 'block';
+        batchResults.style.display = 'none';
+      }
+    });
+    
+    uploadLabel.addEventListener('click', function(e) {
+      if (batchToggle.checked) {
+        e.preventDefault();
+        batchFileInput.click();
+      } else {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+    
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          uploadedImage.src = event.target.result;
+          uploadedImage.style.display = 'block';
+          placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    batchFileInput.addEventListener('change', function(e) {
+      selectedFiles = Array.from(e.target.files);
+      
+      if (selectedFiles.length > 0) {
+        thumbnailsContainer.innerHTML = '';
+        thumbnailsContainer.style.display = 'flex';
+        placeholder.style.display = 'none';
+        
+        selectedFiles.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = event.target.result;
+            thumbnail.classList.add('thumbnail');
+            if (index === 0) thumbnail.classList.add('active');
+            thumbnail.dataset.index = index;
+            thumbnail.addEventListener('click', function() {
+              document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+              this.classList.add('active');
+              activeIndex = parseInt(this.dataset.index);
+            });
+            thumbnailsContainer.appendChild(thumbnail);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+    
+    uploadForm.addEventListener('submit', function(e) {
+      if (batchToggle.checked) {
+        e.preventDefault();
+        
+        if (selectedFiles.length === 0) {
+          alert('Please select at least one image file.');
+          return;
+        }
+        
+        // Create FormData
+        const formData = new FormData();
+        selectedFiles.forEach(file => {
+          formData.append('files[]', file);
+        });
+        
+        // Show loading state
+        batchResults.innerHTML = '<p style="text-align: center;">Processing...</p>';
+        
+        // Send AJAX request
+        fetch('/batch_analyze', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Display batch results
+          batchResults.innerHTML = '<p style="text-align: center;">Batch Results</p>';
+          
+          data.results.forEach(result => {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'batch-item';
+            
+            let statusClass = '';
+            if (result.label === 'Real Money') statusClass = 'result-real';
+            else if (result.label === 'Counterfeit Money') statusClass = 'result-fake';
+            else statusClass = 'result-invalid';
+            
+            resultDiv.innerHTML = `
+              <img src="${result.image_url}" alt="Bill Image">
+              <div class="batch-item-info">
+                <p><strong class="${statusClass}">${result.label}</strong></p>
+                <p>Confidence: ${result.confidence.toFixed(2)}%</p>
+              </div>
+            `;
+            
+            batchResults.appendChild(resultDiv);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          batchResults.innerHTML = '<p style="text-align: center; color: var(--color-danger);">An error occurred. Please try again.</p>';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

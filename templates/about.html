@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>About - PesoCheck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{{ url_for('static', filename='images/peso-check-logo.ico') }}" />
+  <style>
+    :root {
+      --bg-primary: #0b132b;
+      --bg-card: #1c2541;
+      --color-primary: white;
+      --color-accent: #00f2a6;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background-color: var(--bg-primary);
+      color: var(--color-primary);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    nav {
+      background: var(--bg-card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    nav h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .nav-logo {
+      height: 30px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+    
+    nav ul li a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    
+    nav ul li a:hover {
+      opacity: 0.8;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      flex: 1;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border-radius: 10px;
+      padding: 2rem;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    h3 {
+      font-size: 1.5rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    
+    ul {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+    }
+    
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Responsive styling */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1.5rem;
+      }
+      
+      h2 {
+        font-size: 1.75rem;
+      }
+      
+      h3 {
+        font-size: 1.3rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      nav {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>
+      <img src="{{ url_for('static', filename='images/peso-check-logo.png') }}" alt="PesoCheck Logo" class="nav-logo" />PesoCheck</h1>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/history">History</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>About PesoCheck</h2>
+      <p>PesoCheck is an innovative web application designed to combat counterfeit currency in the Philippines by helping users verify the authenticity of Philippine banknotes. Using advanced machine learning, PesoCheck distinguishes between genuine and fake money, empowering individuals and businesses to protect themselves from financial fraud.</p>
+      
+      <h3>Our Mission</h3>
+      <p>In the Philippines, where cash transactions drive daily commerce, counterfeit banknotes undermine economic trust. PesoCheck delivers an accessible, portable tool to detect fake currency, empowering Filipinos to verify security features and safeguard financial stability.</p>
+      
+      <h3>Features</h3>
+      <ul>
+        <li><strong>Counterfeit Detection</strong>: Upload an image of a Philippine banknote, and PesoCheck will analyze it to determine whether it is genuine or counterfeit, supporting both paper and polymer notes.</li>
+        
+        <li><strong>Batch Mode Analysis</strong>: Upload and analyze multiple banknote images simultaneously, perfect for businesses processing multiple bills or individuals checking multiple denominations at once. View all results in a convenient summary format.</li>
+        
+        <li><strong>History Log</strong>: View a detailed history of past analysis results, including the image, classification (real, fake, or invalid), confidence score, and timestamp, for easy reference and tracking.</li>
+        
+        <li><strong>Download History</strong>: Export your analysis history as a CSV file for record-keeping, accounting, or further analysis. Includes all details of each scan including timestamp, classification results, and confidence scores.</li>
+        
+        <li><strong>Invalid Image Detection</strong>: PesoCheck identifies non-banknote images (e.g., random objects) and flags them as invalid, ensuring accurate results for Philippine currency only.</li>
+      </ul>
+      
+      <h3>Technology</h3>
+      <p>PesoCheck is powered by a ResNet18 convolutional neural network, a model pre-trained on ImageNet and fine-tuned for our specific use case. The model was trained over 100 epochs on a carefully curated dataset, consisting of:</p>
+      <ul>
+        <li>410 images of genuine New Generation Currency paper Philippine banknotes.</li>
+        <li>410 images of play money, representing counterfeit banknotes.</li>
+        <li>450 images of random objects, used to train the system to recognize invalid inputs.</li>
+      </ul>
+      
+      <h3>Use Cases</h3>
+      <p>PesoCheck is designed for a variety of users:</p>
+      <ul>
+        <li><strong>Retail Businesses</strong>: Verify large volumes of banknotes quickly using batch mode during end-of-day processing.</li>
+        <li><strong>Market Vendors</strong>: Check suspicious bills on the spot with a simple photo upload.</li>
+        <li><strong>Financial Institutions</strong>: Maintain comprehensive records of currency verification with the history download feature.</li>
+        <li><strong>Individual Consumers</strong>: Verify cash received from private transactions or unfamiliar sources.</li>
+      </ul>
+      
+      <h3>Meet the Creators</h3>
+      <p>PesoCheck was developed by <strong>Samantha Faith M. Tan</strong> and <strong>Urie Funilas</strong>, two college students dedicated to using technology to solve real-world problems. Their expertise in machine learning and commitment to financial security in the Philippines brought PesoCheck to life.</p>
+    </div>
+  </div>
+</body>
+</html>
