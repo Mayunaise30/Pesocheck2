@@ -1,18 +1,28 @@
+<!-- HTML document for the History page of PesoCheck -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Specify character encoding for the document -->
   <meta charset="UTF-8">
+  <!-- Set page title -->
   <title>PesoCheck - History</title>
+  <!-- Ensure responsive design for various devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Link to favicon for the browser tab -->
   <link rel="icon" href="{{ url_for('static', filename='images/peso-check-logo.ico') }}" />
- <link rel="stylesheet" href="/static/css/styles.css">
+  <!-- Link to external stylesheet for styling -->
+  <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
+  <!-- Navigation bar -->
   <nav>
+    <!-- Site title with logo -->
     <h1>
+      <!-- Display PesoCheck logo in the navigation bar -->
       <img src="{{ url_for('static', filename='images/peso-check-logo.png') }}" alt="PesoCheck Logo" class="nav-logo" />
       PesoCheck
     </h1>
+    <!-- Navigation menu -->
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/history">History</a></li>
@@ -20,26 +30,81 @@
     </ul>
   </nav>
 
+  <!-- Main content container -->
   <div class="container">
+    <!-- Card container for history content -->
     <div class="card">
+      <!-- Page header -->
       <h2>History</h2>
+      <!-- Link to download history as a CSV file -->
       <a href="{{ url_for('download_history') }}" class="download-btn">Download History</a>
+      <!-- Check if history data exists -->
       {% if history %}
+        <!-- Loop through each history entry -->
         {% for entry in history %}
+          <!-- Container for individual history entry -->
           <div class="entry">
+            <!-- Display uploaded bill image -->
             <img src="{{ url_for('uploaded_file', filename=entry.filename) }}" alt="Bill Image">
+            <!-- Container for entry details -->
             <div class="entry-info">
+              <!-- Display classification result with dynamic class for styling -->
               <p class="{{ 'result-real' if entry.label == 'Real Money' else 'result-fake' if entry.label == 'Counterfeit Money' else 'result-invalid' }}"><strong>{{ entry.label }}</strong></p>
+              <!-- Display confidence score -->
               <p>Confidence: {{ entry.confidence }}%</p>
+              <!-- Display timestamp of analysis -->
               <p>{{ entry.timestamp }}</p>
             </div>
           </div>
         {% endfor %}
       {% else %}
+        <!-- Display message if no history is available -->
         <p>No history available.</p>
       {% endif %}
     </div>
   </div>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e9d1e4683a7bca',t:'MTc0NzA1MTg5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <!-- Inline script for Cloudflare challenge platform (security/verification) -->
+  <script>
+    (function(){
+      // Define function to inject Cloudflare challenge script
+      function c(){
+        var b = a.contentDocument || a.contentWindow.document;
+        if(b){
+          // Create script element with Cloudflare parameters
+          var d = b.createElement('script');
+          d.innerHTML = "window.__CF$cv$params={r:'93e9d1e4683a7bca',t:'MTc0NzA1MTg5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+          // Append script to document head
+          b.getElementsByTagName('head')[0].appendChild(d);
+        }
+      }
+      // Check if document body exists
+      if(document.body){
+        // Create hidden iframe for Cloudflare challenge
+        var a = document.createElement('iframe');
+        a.height = 1;
+        a.width = 1;
+        a.style.position = 'absolute';
+        a.style.top = 0;
+        a.style.left = 0;
+        a.style.border = 'none';
+        a.style.visibility = 'hidden';
+        document.body.appendChild(a);
+        // Execute script if document is ready
+        if('loading' !== document.readyState) c();
+        else if(window.addEventListener) document.addEventListener('DOMContentLoaded', c);
+        else {
+          // Fallback for older browsers
+          var e = document.onreadystatechange || function(){};
+          document.onreadystatechange = function(b){
+            e(b);
+            if('loading' !== document.readyState){
+              document.onreadystatechange = e;
+              c();
+            }
+          }
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
